@@ -1,0 +1,60 @@
+
+FullCalendar Integration Justification and API Structure Overview for Prison Guard Scheduler App
+===============================================================================================
+
+I. Justification for Using FullCalendar
+---------------------------------------
+FullCalendar is a full-featured JavaScript event calendar.
+
+Key Reasons for Selection:
+1. **Ease of Use**: FullCalendar's intuitive API and comprehensive documentation make it accessible for developers of all skill levels, ensuring a smooth integration process into our application.
+
+2. **Customizability**: It offers extensive customization options, allowing us to tailor the calendar's appearance and functionality to meet the specific needs of our prison guard scheduling system.
+
+3. **Interactivity**: FullCalendar supports interactive features such as drag-and-drop and event resizing, enhancing the user experience by making schedule adjustments straightforward and efficient.
+
+4. **Integration Capabilities**: It can easily integrate with various backend technologies, enabling seamless synchronization with our scheduler API to fetch, display, and manage guard schedules.
+
+5. **Community and Support**: Being a widely adopted solution, FullCalendar benefits from a large community of users and developers, providing a wealth of resources for troubleshooting and enhancement ideas.
+
+
+
+II. API Structure Overview
+--------------------------
+Add Location specification & checks (sobreposição, 1 pessoa em 2 sitios ao mesmo tempo).
+
+
+
+Schedule Endpoints
+   1. Create Schedule Entry
+      - Endpoint: `/schedule`
+      - Method: POST
+      - Purpose: Add a new schedule entry for a guard.
+
+   2. Retrieve Schedule Entries
+      - Endpoint: `/schedule`
+      - Method: GET
+      - Purpose: Fetch schedule entries, with optional filtering by date range and guard ID.
+
+   3. Update Schedule Entry
+      - Endpoint: `/schedule/{entryId}`
+      - Method: PUT
+      - Purpose: Update details of an existing schedule entry.
+
+   4. Delete Schedule Entry
+      - Endpoint: `/schedule/{entryId}`
+      - Method: DELETE
+      - Purpose: Remove an existing schedule entry.
+
+   5. Switch Schedule Entry Between Employees (OPTIONAL)
+      - Endpoint: `/schedule/switch`
+      - Method: POST
+      - Purpose: Swap a schedule entry between two guards.
+      - Data Required: Entry ID, Target Guard ID
+      - Response: Success message indicating the schedule entry has been switched between the specified guards.
+
+   
+
+Authentication
+- usar google/facebook como se fosse compositor
+- nao usar oauth2.0 porque era como se fosse reinventar a roda, nao tentar criar base de dados seguras (demasiado complicado)
