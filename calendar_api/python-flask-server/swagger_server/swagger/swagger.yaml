@@ -1,0 +1,215 @@
+openapi: 3.0.0
+info:
+  title: Prison Guard Scheduling API
+  description: "This API manages the schedules of prison guards, ensuring a guard\
+    \ cannot be scheduled to be in two places at the same time. It supports querying\
+    \ schedules by guard ID and location name."
+  version: 1.0.0
+servers:
+- url: https://virtserver.swaggerhub.com/GJSCRAVEIRO/Calendar/1.0.0
+  description: SwaggerHub API Auto Mocking
+- url: http://example.com/api
+paths:
+  /schedules:
+    get:
+      summary: Get a list of all schedules
+      operationId: schedules_get
+      responses:
+        "200":
+          description: A list of schedules
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Schedule'
+                x-content-type: application/json
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+    post:
+      summary: Create a new schedule
+      description: "Creates a new schedule entry for a guard, checking for conflicts."
+      operationId: schedules_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Schedule'
+        required: true
+      responses:
+        "201":
+          description: Schedule created
+        "400":
+          description: Bad request - scheduling conflict or invalid data
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+  /schedules/{scheduleId}:
+    get:
+      summary: Get a specific schedule by ID
+      operationId: schedules_schedule_id_get
+      parameters:
+      - name: scheduleId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Schedule details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+    put:
+      summary: Update a schedule by ID
+      description: "Updates an existing schedule, checking for conflicts."
+      operationId: schedules_schedule_id_put
+      parameters:
+      - name: scheduleId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Schedule'
+        required: true
+      responses:
+        "200":
+          description: Schedule updated
+        "400":
+          description: Bad request - scheduling conflict or invalid data
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+    delete:
+      summary: Delete a schedule by ID
+      operationId: schedules_schedule_id_delete
+      parameters:
+      - name: scheduleId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: Schedule deleted
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+  /schedules/switch:
+    post:
+      summary: Switch a schedule between two guards
+      description: Allows the swapping of a specific schedule from one guard to another.
+      operationId: schedules_switch_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/schedules_switch_body'
+        required: true
+      responses:
+        "200":
+          description: Schedule successfully switched between the guards.
+        "400":
+          description: "Bad request - invalid input, such as non-existent guard or\
+            \ schedule IDs."
+        "409":
+          description: "Conflict - the operation could not be completed due to a scheduling\
+            \ conflict, such as the target guard already having a schedule at the\
+            \ same time."
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+  /schedules/guard/{guardId}:
+    get:
+      summary: Get schedules by guard ID
+      operationId: schedules_guard_guard_id_get
+      parameters:
+      - name: guardId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: A list of schedules for the specified guard
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Schedule'
+                x-content-type: application/json
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+  /schedules/location/{locationName}:
+    get:
+      summary: Get schedules by location name
+      operationId: schedules_location_location_name_get
+      parameters:
+      - name: locationName
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: A list of schedules for the specified location
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Schedule'
+                x-content-type: application/json
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+components:
+  schemas:
+    Schedule:
+      required:
+      - guardId
+      - locationId
+      - time
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique identifier of the schedule.
+        guardId:
+          type: string
+          description: The unique identifier of the guard.
+        time:
+          type: string
+          description: "The scheduled start time, with conflict checks."
+          format: date-time
+        locationId:
+          type: string
+          description: "The unique identifier of the location, referencing the Location\
+            \ schema."
+      example:
+        guardId: guardId
+        locationId: locationId
+        id: id
+        time: 2000-01-23T04:56:07.000+00:00
+    schedules_switch_body:
+      required:
+      - guardIdFrom
+      - guardIdTo
+      - scheduleId
+      type: object
+      properties:
+        scheduleId:
+          type: string
+          description: The ID of the schedule to be switched.
+        guardIdFrom:
+          type: string
+          description: The ID of the guard currently assigned to the schedule.
+        guardIdTo:
+          type: string
+          description: The ID of the guard to whom the schedule will be reassigned.
+
