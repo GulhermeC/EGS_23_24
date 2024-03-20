@@ -1,0 +1,8 @@
+COMMENTS:
+- query on the first end point for location/ids
+- add version number before endpoint (/schedule(s))
+- api key on http header
+
+
+
+TODO:
