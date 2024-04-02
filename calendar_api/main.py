@@ -1,7 +1,9 @@
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from models import Schedule
+from schemas import Schedule
 from typing import List
+from database import database
+from routes.schedule_routes import router as schedule_router
 import logging
 
 from logger import setup_logger
@@ -29,6 +31,16 @@ def validate_token(auth: HTTPAuthorizationCredentials = Depends(security)):
 
 # Mock database
 db: List[Schedule] = []
+
+app.include_router(schedule_router)
+
+@app.on_event("startup")
+async def startup():
+    await database.connect()
+
+@app.on_event("shutdown")
+async def shutdown():
+    await database.disconnect()
 
 @app.get("/v1/schedules", response_model=List[Schedule], dependencies=[Depends(validate_token)])
 async def list_schedules() -> List[Schedule]:

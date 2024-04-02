@@ -1,7 +1,15 @@
-from pydantic import BaseModel, Field
-from datetime import datetime
+from sqlalchemy import Column, String, DateTime, create_engine, MetaData, Table
+from databases import Database
 
-class Schedule(BaseModel):
-    id: str
-    time: datetime
-    locationId: str = Field(alias='locationId')
+metadata = MetaData()
+
+schedule_table = Table(
+    "schedules",
+    metadata,
+    Column("id", String, primary_key=True),
+    Column("time", DateTime),
+    Column("locationId", String),
+)
+
+DATABASE_URL = "postgresql://user:password@localhost/dbname"
+database = Database(DATABASE_URL)
