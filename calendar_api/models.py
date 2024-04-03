@@ -11,5 +11,5 @@ schedule_table = Table(
     Column("locationId", String),
 )
 
-DATABASE_URL = "postgresql://user:password@localhost/dbname"
+DATABASE_URL = "postgresql://calendar:password123@localhost/calendar"
 database = Database(DATABASE_URL)
