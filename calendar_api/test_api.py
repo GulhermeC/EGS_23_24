@@ -11,7 +11,7 @@ def test_create_schedule():
     url = f"{BASE_URL}/schedules"
     # Use a unique identifier for testing, or clean up after tests
     schedule_data = {
-        "id": "test_4",
+        "id": "test_11",
         "time": "2024-03-20T08:00:00",
         "locationId": "loc_456"
     }
@@ -30,7 +30,8 @@ def test_get_schedule(schedule_id):
 def test_update_schedule(schedule_id):
     url = f"{BASE_URL}/schedule/{schedule_id}"
     updated_data = {
-        "time": "2024-03-21T09:00:00",  # Removed 'id' as it's typically not changed in updates
+        "id": schedule_id,
+        "time": "2024-03-21T09:00:00",
         "locationId": "loc_789"
     }
     response = requests.put(url, json=updated_data, headers=headers)
@@ -46,9 +47,9 @@ def test_delete_schedule(schedule_id):
 if __name__ == "__main__":
     # Run our tests
     created_schedule = test_create_schedule()  # Create and get the created schedule's details
-    #if "id" in created_schedule:
-    #    test_get_schedule(created_schedule["id"])  # Test retrieval of the schedule
-    #    test_update_schedule(created_schedule["id"])  # Test updating the schedule
-    #    test_delete_schedule(created_schedule["id"])  # Test deleting the schedule
-    #else:
-    #    print("Schedule creation failed, subsequent tests skipped.")
+    if "id" in created_schedule:
+        test_get_schedule(created_schedule["id"])  # Test retrieval of the schedule
+        test_update_schedule(created_schedule["id"])  # Test updating the schedule
+        test_delete_schedule(created_schedule["id"])  # Test deleting the schedule
+    else:
+        print("Schedule creation failed, subsequent tests skipped.")

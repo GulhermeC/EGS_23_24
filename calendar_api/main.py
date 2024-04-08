@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, Response
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from schemas import Schedule
 from typing import List
@@ -80,4 +80,4 @@ async def update_schedule(schedule_id: str, schedule_update: Schedule):
 async def delete_schedule(schedule_id: str):
     logging.info(f"Attempting to delete schedule with ID: {schedule_id}")
     await crud.delete_schedule(schedule_id)
-    return Response(status_code=HTTP_204_NO_CONTENT)
+    return Response(status_code=204)

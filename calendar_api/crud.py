@@ -12,8 +12,8 @@ async def create_schedule(schedule: Schedule):
         time=schedule.time, 
         locationId=schedule.locationId
     )
-    last_record_id = await database.execute(query)
-    return {**schedule.dict(), "id": last_record_id}
+    await database.execute(query)
+    return schedule
 
 async def get_schedule(schedule_id: str):
     query = schedule_table.select().where(schedule_table.c.id == schedule_id)
