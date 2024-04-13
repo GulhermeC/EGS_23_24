@@ -9,6 +9,7 @@ schedule_table = Table(
     Column("id", String, primary_key=True),
     Column("time", DateTime),
     Column("locationId", String),
+    Column("person_name", String)
 )
 
 DATABASE_URL = "postgresql://calendar:password123@localhost/calendar"

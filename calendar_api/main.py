@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends, Response
+from fastapi import FastAPI, HTTPException, Depends, Response, status, Query
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from schemas import Schedule
 from typing import List
@@ -34,15 +34,6 @@ def validate_token(auth: HTTPAuthorizationCredentials = Depends(security)):
 
 app.include_router(schedule_router)
 
-
-#@app.on_event("startup")
-#async def startup():
-#    await database.connect()
-
-#@app.on_event("shutdown")
-#async def shutdown():
-#    await database.disconnect()
-
 # LIST ALL SCHEDULES
 @app.get("/v1/schedules", response_model=List[Schedule], dependencies=[Depends(validate_token)])
 async def list_schedules() -> List[Schedule]:
@@ -56,28 +47,36 @@ async def create_schedule(schedule: Schedule):
     return await crud.create_schedule(schedule)
 
 # GET SCHEDULE
-@app.get("/v1/schedule/{schedule_id}", response_model=Schedule, dependencies=[Depends(validate_token)])
-async def get_schedule(schedule_id: str) -> Schedule:
-    logging.info(f"Retrieving schedule with ID: {schedule_id}")
-    schedule = await crud.get_schedule(schedule_id)
+@app.get("/v1/schedule/{id}", response_model=Schedule, dependencies=[Depends(validate_token)])
+async def get_schedule(id: str) -> Schedule:
+    logging.info(f"Retrieving schedule with ID: {id}")
+    schedule = await crud.get_schedule(id)
     if schedule is None:
-        logging.warning(f"Schedule not found: ID {schedule_id}")
+        logging.warning(f"Schedule not found: ID {id}")
         raise HTTPException(status_code=404, detail="Schedule not found")
     return schedule
 
 # UPDATE SCHEDULE
-@app.put("/v1/schedule/{schedule_id}", response_model=Schedule, dependencies=[Depends(validate_token)])
-async def update_schedule(schedule_id: str, schedule_update: Schedule):
-    logging.info("Updating schedule with ID: %s", schedule_id)
-    updated_schedule = await crud.update_schedule(schedule_id, schedule_update)
+@app.put("/v1/schedule/{id}", response_model=Schedule, dependencies=[Depends(validate_token)])
+async def update_schedule(id: str, schedule_update: Schedule):
+    logging.info(f"Updating schedule with ID: {id}")
+    updated_schedule = await crud.update_schedule(id, schedule_update)
     if updated_schedule is None:
-        logging.warning(f"Failed to update: Schedule not found with ID {schedule_id}")
+        logging.warning(f"Failed to update: Schedule not found with ID {id}")
         raise HTTPException(status_code=404, detail="Schedule not found")
     return updated_schedule
 
 # DELETE SCHEDULE
-@app.delete("/v1/schedule/{schedule_id}", status_code=204, dependencies=[Depends(validate_token)])
-async def delete_schedule(schedule_id: str):
-    logging.info(f"Attempting to delete schedule with ID: {schedule_id}")
-    await crud.delete_schedule(schedule_id)
+@app.delete("/v1/schedule/{id}", status_code=204, dependencies=[Depends(validate_token)])
+async def delete_schedule(id: str):
+    logging.info(f"Attempting to delete schedule with ID: {id}")
+    await crud.delete_schedule(id)
     return Response(status_code=204)
+
+@app.get("/v1/schedules/{person_name}", response_model=List[Schedule], dependencies=[Depends(validate_token)])
+async def list_schedules_by_person_name(person_name: str):
+    logging.info(f"Listing all schedules for {person_name}")
+    schedules = await crud.get_schedules_by_person_name(person_name)
+    if not schedules:
+        raise HTTPException(status_code=404, detail="No schedules found for this person")
+    return schedules

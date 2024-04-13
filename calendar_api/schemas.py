@@ -6,3 +6,4 @@ class Schedule(BaseModel):
     id: str
     time: datetime
     locationId: str = Field(..., alias='locationId')
+    person_name: str
