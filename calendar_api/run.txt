@@ -1,2 +1,5 @@
 psql
 python -m uvicorn main:app --reload
+
+docker build -t calendar_service_api .
+docker run -p 8000:8000 calendar_service_api
