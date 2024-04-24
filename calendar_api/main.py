@@ -1,9 +1,10 @@
 from fastapi import FastAPI, HTTPException, Depends, Response, status, Query
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from schemas import Schedule
+from schemas import Schedule, ScheduleUpdate
 from typing import List
 from database import database
 from routes.schedule_routes import router as schedule_router
+from uuid import UUID
 import logging
 import crud
 
@@ -48,7 +49,7 @@ async def create_schedule(schedule: Schedule):
 
 # GET SCHEDULE
 @app.get("/v1/schedule/{id}", response_model=Schedule, dependencies=[Depends(validate_token)])
-async def get_schedule(id: str) -> Schedule:
+async def get_schedule(id: UUID) -> Schedule:
     logging.info(f"Retrieving schedule with ID: {id}")
     schedule = await crud.get_schedule(id)
     if schedule is None:
@@ -58,7 +59,7 @@ async def get_schedule(id: str) -> Schedule:
 
 # UPDATE SCHEDULE
 @app.put("/v1/schedule/{id}", response_model=Schedule, dependencies=[Depends(validate_token)])
-async def update_schedule(id: str, schedule_update: Schedule):
+async def update_schedule(id: UUID, schedule_update: ScheduleUpdate):
     logging.info(f"Updating schedule with ID: {id}")
     updated_schedule = await crud.update_schedule(id, schedule_update)
     if updated_schedule is None:
@@ -68,7 +69,7 @@ async def update_schedule(id: str, schedule_update: Schedule):
 
 # DELETE SCHEDULE
 @app.delete("/v1/schedule/{id}", status_code=204, dependencies=[Depends(validate_token)])
-async def delete_schedule(id: str):
+async def delete_schedule(id: UUID):
     logging.info(f"Attempting to delete schedule with ID: {id}")
     await crud.delete_schedule(id)
     return Response(status_code=204)

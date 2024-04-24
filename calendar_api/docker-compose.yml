@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  calendar_api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_NAME=CalendarService
+      - DATABASE_URL=postgresql://calendar:password123@db/calendar
+    depends_on:
+      - db
+
+  db:
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_DB: calendar           # Name of the database
+      POSTGRES_USER: calendar    # Username for the database
+      POSTGRES_PASSWORD: password123 # Password for the database user
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:

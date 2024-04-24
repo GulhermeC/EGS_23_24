@@ -1,5 +1,6 @@
+from uuid import UUID
 from database import database
-from schemas import Schedule
+from schemas import Schedule, ScheduleUpdate
 from models import schedule_table
 
 async def get_schedules():
@@ -8,28 +9,29 @@ async def get_schedules():
 
 async def create_schedule(schedule: Schedule):
     query = schedule_table.insert().values(
-        id=schedule.id,  # This is the primary key
+        id=schedule.id,
         time=schedule.time,
         locationId=schedule.locationId,
-        person_name=schedule.person_name  # Ensure this is included in your schema and passed here
+        person_name=schedule.person_name
     )
     last_record_id = await database.execute(query)
-    return {**schedule.dict(), "id": schedule.id}  # Return with id
+    return {**schedule.dict(), "id": schedule.id}
 
-async def get_schedule(id: str):
+async def get_schedule(id: UUID):
     query = schedule_table.select().where(schedule_table.c.id == id)
     return await database.fetch_one(query)
 
-async def update_schedule(id: str, schedule: Schedule):
+async def update_schedule(id: UUID, schedule_update: ScheduleUpdate):
+    # Update this function to use ScheduleUpdate
     query = schedule_table.update().where(schedule_table.c.id == id).values(
-        time=schedule.time,
-        locationId=schedule.locationId,
-        person_name=schedule.person_name  # Make sure to update this field if it's being changed
+        time=schedule_update.time,
+        locationId=schedule_update.locationId,
+        person_name=schedule_update.person_name
     )
     await database.execute(query)
-    return {**schedule.dict(), "id": id}
+    return await get_schedule(id)
 
-async def delete_schedule(id: str):
+async def delete_schedule(id: UUID):
     query = schedule_table.delete().where(schedule_table.c.id == id)
     await database.execute(query)
     
