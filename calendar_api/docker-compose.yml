@@ -20,9 +20,14 @@ services:
       POSTGRES_PASSWORD: password123 # Password for the database user
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5432:5432"
+
+networks:
+  frontend:
+    driver: custom-driver-1
+  backend:
+    driver: custom-driver-2
 
 volumes:
   postgres_data:

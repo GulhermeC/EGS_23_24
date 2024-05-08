@@ -57,7 +57,7 @@ if __name__ == "__main__":
     if "id" in created_schedule:  # Using 'id' for further operations
         test_get_schedule(created_schedule["id"])  # Test retrieval of the schedule
         test_update_schedule(created_schedule["id"])  # Test updating the schedule
-        test_get_schedules_by_person_name("John Doe")
+        test_get_schedules_by_person_name("Jane Doe")
         test_delete_schedule(created_schedule["id"])  # Test deleting the schedule
     else:
         print("Schedule creation failed, subsequent tests skipped.")
